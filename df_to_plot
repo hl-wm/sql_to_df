@@ -1,0 +1,58 @@
+import pandas as pd
+from pandas import DataFrame, read_excel, read_csv
+from sqlalchemy import create_engine, MetaData, TEXT, Integer, Table, Column, ForeignKey
+from pandas.io import sql
+import MySQLdb
+import pandas
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.style.use('ggplot')
+import numpy as np
+%matplotlib inline
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+##SQLAlchemy
+engine = create_engine('mysql+mysqldb://root:@localhost/test')
+conn = engine.raw_connection()
+
+
+#Using pandas IO .read_sql()
+data = "SELECT occupations2012_2022.OCC_CODE, occupations2012_2022.OCC_TITLE, occupations2012_2022.MED_WAGE2012, national_M2014_dl4.TOT_EMP FROM occupations2012_2022 left join national_M2014_dl4 on occupations2012_2022.OCC_CODE = national_M2014_dl4.OCC_CODE order by occupations2012_2022.MED_WAGE2012;"
+
+
+data = pandas.read_sql(data, conn, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+#pandas.read_sql(sql, con, index_col=None, coerce_float=True, params=None, parse_dates=None, columns=None, chunksize=None)
+
+
+#Pandas and Jupyter displays html data frame
+df = DataFrame(data)
+#df = df.fillna(0)
+#df = df.replace(to_replace = {'*':0, '#':0})
+#df = df.set_index('permalink')
+##df
+df
+
+#df = pd.DataFrame(df, columns=['MED_WAGE2012', 'TOT_EMP'])
+#df.plot(kind='area', stacked=False)
+
+#df.plot(kind='scatter', x='MED_WAGE2012', y='TOT_EMP')
+#df.plot(kind='scatter', x='MED_WAGE2012', y='TOT_EMP',  s=df['c']*200);
+
+#ax = df.plot(kind='scatter', x='a', y='b', color='DarkBlue', label='Group 1')
+#df.plot(kind='scatter', x='c', y='d', color='DarkGreen', label='Group 2', ax=ax)
+
+
+#df.A.plot()
+#df.B.plot(secondary_y=True, style='g')
+
+#fig, axes = plt.subplots(nrows=2, ncols=2)
+#df['MED_WAGE2012'].plot(ax=axes[0,0]); axes[0,0].set_title('MED_WAGE2012');
+#df['TOT_EMP'].plot(ax=axes[0,1]); axes[0,1].set_title('TOT_EMP');
+
+
+
+g = sns.FacetGrid(df, row="TOT_EMP", col="MED_WAGE2012", margin_titles=True)
+g.map(sns.regplot, "TOT_EMP", "MED_WAGE2012", order=2)
+g    
+#plt.show()
